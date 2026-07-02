@@ -6,6 +6,7 @@ import { AppScreen } from '../components/AppScreen';
 import { Button } from '../components/Button';
 import { useTodo } from '../services/todo';
 import { Typography } from '../components/Typography';
+import { useTheme } from '../services/theme';
 
 type Props = StaticScreenProps<{
   todo?: Todo;
@@ -13,6 +14,7 @@ type Props = StaticScreenProps<{
 
 export const NewTodoScreen = ({ route }: Props) => {
   const navigation = useNavigation();
+  const { colors } = useTheme();
   const { todo } = route.params;
   const isEdit = Boolean(todo);
   const { addTodo, updateTodo } = useTodo();
@@ -29,19 +31,42 @@ export const NewTodoScreen = ({ route }: Props) => {
   };
 
   return (
-    <AppScreen title={isEdit ? 'Edit Todo' : 'New Todo'}>
+    <AppScreen
+      title={isEdit ? 'Edit Todo' : 'New Todo'}
+      subtitle={isEdit ? 'Give this todo a sharper direction.' : 'Capture the next thing you want to move forward.'}
+    >
       <View style={styles.fill}>
-        <Typography>{'Title'}</Typography>
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Enter title"
-          style={styles.input}
-        />
+        <View style={styles.labelWrapper}>
+          <Typography size={14} color={colors.muted} weight="500">
+            Title
+          </Typography>
+          <Typography size={12} color={colors.muted}>
+            Add a quick summary so Future You knows the plan.
+          </Typography>
+        </View>
+        <View
+          style={[
+            styles.inputWrapper,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              shadowColor: colors.primary,
+            },
+          ]}
+        >
+          <TextInput
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Write the next thing to tackle"
+            placeholderTextColor={colors.muted}
+            style={[styles.input, { color: colors.text }]}
+          />
+        </View>
       </View>
       <Button
         onPress={isEdit ? onEdit : onAdd}
-        title={isEdit ? 'Edit' : 'Add'}
+        title={isEdit ? 'Save Changes' : 'Add Todo'}
+        disabled={!title.trim()}
       />
     </AppScreen>
   );
@@ -51,12 +76,23 @@ const styles = StyleSheet.create({
   fill: {
     flex: 1,
   },
+  labelWrapper: {
+    gap: 4,
+    marginBottom: 16,
+  },
+  inputWrapper: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 18,
+    paddingHorizontal: 20,
+    paddingVertical: 2,
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 16 },
+    elevation: 3,
+  },
   input: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'lightgray',
-    borderRadius: 8,
-    height: 50,
-    marginTop: 8,
+    paddingVertical: 16,
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
