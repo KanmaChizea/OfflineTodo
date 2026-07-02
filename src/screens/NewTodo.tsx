@@ -4,9 +4,9 @@ import { StaticScreenProps, useNavigation } from '@react-navigation/native';
 import { Todo } from '../types/todo';
 import { AppScreen } from '../components/AppScreen';
 import { Button } from '../components/Button';
-import { useTodo } from '../services/todo';
 import { Typography } from '../components/Typography';
 import { useTheme } from '../services/theme';
+import { useTodoSyncEngine } from '../services/sync_engine';
 
 type Props = StaticScreenProps<{
   todo?: Todo;
@@ -17,11 +17,11 @@ export const NewTodoScreen = ({ route }: Props) => {
   const { colors } = useTheme();
   const { todo } = route.params;
   const isEdit = Boolean(todo);
-  const { addTodo, updateTodo } = useTodo();
+  const { addTodo, updateTodo } = useTodoSyncEngine();
   const [title, setTitle] = React.useState(todo?.title || '');
 
   const onAdd = () => {
-    addTodo({ id: Date.now(), title, completed: false });
+    addTodo(title);
     navigation.goBack();
   };
 
@@ -33,7 +33,11 @@ export const NewTodoScreen = ({ route }: Props) => {
   return (
     <AppScreen
       title={isEdit ? 'Edit Todo' : 'New Todo'}
-      subtitle={isEdit ? 'Give this todo a sharper direction.' : 'Capture the next thing you want to move forward.'}
+      subtitle={
+        isEdit
+          ? 'Give this todo a sharper direction.'
+          : 'Capture the next thing you want to move forward.'
+      }
     >
       <View style={styles.fill}>
         <View style={styles.labelWrapper}>

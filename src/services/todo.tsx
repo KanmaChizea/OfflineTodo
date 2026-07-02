@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { Todo } from '../types/todo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../constants/storage_keys';
@@ -6,9 +6,10 @@ import { STORAGE_KEYS } from '../constants/storage_keys';
 interface TodoContextType {
   todos: Todo[];
   initializeTodos: () => void;
-  addTodo: (todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
-  deleteTodo: (id: number) => void;
+  addTodoToLocal: (todo: Todo) => Promise<void>;
+  updateTodoToLocal: (id: number, todo: Todo) => Promise<void>;
+  deleteTodoToLocal: (id: number) => Promise<void>;
+  updateLocalTodos: (todos: Todo[]) => Promise<void>;
 }
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -16,41 +17,58 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>();
 
   // Fetch todos from storage
-  const initializeTodos = async () => {
+  const initializeTodos = useCallback(async () => {
+    if (todos !== undefined) return;
     const result = await AsyncStorage.getItem(STORAGE_KEYS.todo);
-    console.log(result);
 
     if (result) {
       setTodos(JSON.parse(result));
     }
-  };
+  }, [todos]);
 
-  const addTodo = (todo: Todo) => {
-    setTodos([...todos, todo]);
-    AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(todos));
-  };
+  const updateLocalTodos = useCallback(async (items: Todo[]) => {
+    await AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(items));
+    setTodos(items);
+  }, []);
 
-  const updateTodo = (todo: Todo) => {
-    setTodos(todos.map(t => (t.id === todo.id ? todo : t)));
-    AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(todos));
-  };
+  const addTodoToLocal = useCallback(
+    async (todo: Todo) => {
+      const newTodos = [...(todos ?? []), todo];
+      setTodos(newTodos);
+      await AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(newTodos));
+    },
+    [todos],
+  );
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(t => t.id !== id));
-    AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(todos));
-  };
+  const updateTodoToLocal = useCallback(
+    async (id: number, todo: Todo) => {
+      const newTodos = (todos ?? []).map(t => (t.id === id ? todo : t));
+      setTodos(newTodos);
+      await AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(newTodos));
+    },
+    [todos],
+  );
+
+  const deleteTodoToLocal = useCallback(
+    async (id: number) => {
+      setTodos((todos ?? []).filter(t => t.id !== id));
+      await AsyncStorage.setItem(STORAGE_KEYS.todo, JSON.stringify(todos));
+    },
+    [todos],
+  );
 
   return (
     <TodoContext.Provider
       value={{
-        todos,
+        todos: todos || [],
         initializeTodos,
-        addTodo,
-        updateTodo,
-        deleteTodo,
+        addTodoToLocal,
+        updateTodoToLocal,
+        deleteTodoToLocal,
+        updateLocalTodos,
       }}
     >
       {children}

@@ -3,7 +3,6 @@ import React from 'react';
 import { Todo } from '../types/todo';
 import { Typography } from './Typography';
 import { useNavigation } from '@react-navigation/native';
-import { useTodo } from '../services/todo';
 import { useTheme } from '../services/theme';
 import {
   Edit,
@@ -12,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'react-native-feather';
+import { useTodoSyncEngine } from '../services/sync_engine';
 
 type Props = {
   todo: Todo;
@@ -21,7 +21,7 @@ export const TodoItem = ({ todo }: Props) => {
   const [showFull, setShowFull] = React.useState(false);
   const [confirmingDelete, setConfirmingDelete] = React.useState(false);
 
-  const { deleteTodo, updateTodo } = useTodo();
+  const { deleteTodo, updateTodo } = useTodoSyncEngine();
   const { colors } = useTheme();
 
   const onEdit = () => {
@@ -33,7 +33,7 @@ export const TodoItem = ({ todo }: Props) => {
   };
 
   const onConfirmDelete = () => {
-    deleteTodo(todo.id);
+    deleteTodo(todo);
     setConfirmingDelete(false);
   };
 
@@ -44,7 +44,7 @@ export const TodoItem = ({ todo }: Props) => {
   const onToggleComplete = () => {
     updateTodo({
       ...todo,
-      completed: !todo.completed,
+      isCompleted: !todo.isCompleted,
     });
   };
 
@@ -63,9 +63,16 @@ export const TodoItem = ({ todo }: Props) => {
         activeOpacity={0.95}
       >
         <View style={styles.row}>
-          {todo.completed ? (
-            <View style={[styles.statusIcon, { backgroundColor: colors.success }]}>
-              <Check width={16} height={16} strokeWidth={3} color={colors.surface} />
+          {todo.isCompleted ? (
+            <View
+              style={[styles.statusIcon, { backgroundColor: colors.success }]}
+            >
+              <Check
+                width={16}
+                height={16}
+                strokeWidth={3}
+                color={colors.surface}
+              />
             </View>
           ) : (
             <View style={[styles.statusIcon, { borderColor: colors.border }]} />
@@ -73,9 +80,9 @@ export const TodoItem = ({ todo }: Props) => {
           <View style={styles.fill}>
             <Typography
               numberOfLines={showFull ? undefined : 1}
-              weight={todo.completed ? '500' : '600'}
-              style={todo.completed ? styles.strikeThrough : undefined}
-              color={todo.completed ? colors.muted : colors.text}
+              weight={todo.isCompleted ? '500' : '600'}
+              style={todo.isCompleted ? styles.strikeThrough : undefined}
+              color={todo.isCompleted ? colors.muted : colors.text}
             >
               {todo.title}
             </Typography>
@@ -91,7 +98,10 @@ export const TodoItem = ({ todo }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: colors.background, borderColor: colors.border },
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                },
               ]}
               onPress={onEdit}
             >
@@ -103,7 +113,10 @@ export const TodoItem = ({ todo }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: colors.background, borderColor: colors.border },
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                },
               ]}
               onPress={onDeletePress}
             >
@@ -115,13 +128,16 @@ export const TodoItem = ({ todo }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: colors.background, borderColor: colors.border },
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                },
               ]}
               onPress={onToggleComplete}
             >
               <Check size={16} color={colors.success} />
               <Typography size={13} color={colors.success} weight="600">
-                {todo.completed ? 'Undo' : 'Complete'}
+                {todo.isCompleted ? 'Undo' : 'Complete'}
               </Typography>
             </TouchableOpacity>
           </View>
@@ -147,14 +163,21 @@ export const TodoItem = ({ todo }: Props) => {
             <Typography size={18} weight="700">
               Delete this todo?
             </Typography>
-            <Typography size={14} color={colors.muted} style={styles.modalDescription}>
+            <Typography
+              size={14}
+              color={colors.muted}
+              style={styles.modalDescription}
+            >
               This action can’t be undone.
             </Typography>
             <View style={styles.modalActions}>
               <TouchableOpacity
                 style={[
                   styles.modalButton,
-                  { backgroundColor: colors.background, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                  },
                 ]}
                 onPress={onCancelDelete}
                 activeOpacity={0.85}

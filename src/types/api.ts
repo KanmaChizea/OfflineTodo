@@ -3,13 +3,12 @@
  * Offline-First Architecture Demo
  */
 
-import { Todo } from './todo';
+import { SyncAction, Todo } from './todo';
 
 // ==================== Request Types ====================
 
 export interface CreateTodoRequest {
   title: string;
-  isCompleted?: boolean;
 }
 
 export interface UpdateTodoRequest {
@@ -27,18 +26,14 @@ export interface GetTodosParams {
   [key: string]: string | number | undefined;
 }
 
-// Sync change types
-export type SyncChangeType = 'create' | 'update' | 'delete';
-
 export interface SyncChange {
-  type: SyncChangeType;
+  type: SyncAction;
   id?: number;
   data?: Partial<Pick<Todo, 'title' | 'isCompleted'>>;
   clientVersion?: number;
 }
 
 export interface SyncRequest {
-  clientLastVersion?: number;
   changes: SyncChange[];
 }
 
@@ -100,7 +95,7 @@ export interface ErrorResponse {
 // Sync result for individual change
 export interface SyncResult {
   index: number;
-  type: SyncChangeType;
+  type: SyncAction;
   success: boolean;
   data?: Todo;
   error?: string;

@@ -1,9 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { AppScreen } from '../components/AppScreen';
@@ -14,23 +9,25 @@ import { useTodo } from '../services/todo';
 import { useTheme } from '../services/theme';
 import { Typography } from '../components/Typography';
 import { Button } from '../components/Button';
+import { useTodoSyncEngine } from '../services/sync_engine';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
   const { isDark, toggleTheme, colors } = useTheme();
-  const { todos, initializeTodos } = useTodo();
+  const { todos } = useTodo();
+  const { onInitializeTodos } = useTodoSyncEngine();
 
   const onAddTodoPress = () => {
     navigation.navigate('NewTodo', {});
   };
 
   useEffect(() => {
-    initializeTodos();
+    onInitializeTodos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const summary = useMemo(() => {
-    const completed = todos.filter(todo => todo.completed).length;
+    const completed = todos.filter(todo => todo.isCompleted).length;
     const total = todos.length;
     const completionRate = total ? Math.round((completed / total) * 100) : 0;
 
@@ -66,7 +63,11 @@ export const HomeScreen = () => {
   return (
     <AppScreen
       title="Todos"
-      subtitle={summary.total ? 'Track progress and set a deliberate pace for today.' : 'Let’s capture what you want to tackle first.'}
+      subtitle={
+        summary.total
+          ? 'Track progress and set a deliberate pace for today.'
+          : 'Let’s capture what you want to tackle first.'
+      }
       hideBackButton
       actions={[themeAction]}
     >
@@ -102,14 +103,23 @@ export const HomeScreen = () => {
               <Typography size={28} weight="700">
                 Make today count
               </Typography>
-              <Typography size={14} color={colors.muted} style={styles.heroSubtitle}>
+              <Typography
+                size={14}
+                color={colors.muted}
+                style={styles.heroSubtitle}
+              >
                 {summary.total
-                  ? `${summary.remaining} task${summary.remaining === 1 ? '' : 's'} left · ${summary.completionRate}% done`
+                  ? `${summary.remaining} task${
+                      summary.remaining === 1 ? '' : 's'
+                    } left · ${summary.completionRate}% done`
                   : 'Add your first todo to get started'}
               </Typography>
               <View style={styles.progressWrapper}>
                 <View
-                  style={[styles.progressTrack, { backgroundColor: colors.border }]}
+                  style={[
+                    styles.progressTrack,
+                    { backgroundColor: colors.border },
+                  ]}
                 />
                 <View
                   style={[

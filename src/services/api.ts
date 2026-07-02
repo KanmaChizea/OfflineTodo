@@ -6,8 +6,6 @@
 
 import {
   GetTodosResponse,
-  GetTodoResponse,
-  CreateTodoRequest,
   CreateTodoResponse,
   UpdateTodoRequest,
   UpdateTodoResponse,
@@ -42,7 +40,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
     );
   }
 
-  return (await response.json()) as T;
+  const parsed = (await response.json()) as T;
+  console.log('Response', parsed);
+
+  return parsed;
 }
 
 /**
@@ -94,7 +95,9 @@ function buildUrl(
     const queryParams: string[] = [];
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
-        queryParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
+        queryParams.push(
+          `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+        );
       }
     });
     if (queryParams.length > 0) {
@@ -111,7 +114,7 @@ function buildUrl(
  * Get all todos
  * Use the `since` parameter for incremental sync
  */
-export async function getTodos(
+export async function getTodosRequest(
   params?: GetTodosParams,
 ): Promise<GetTodosResponse> {
   const url = buildUrl('/todos', params);
@@ -120,25 +123,19 @@ export async function getTodos(
 }
 
 /**
- * Get a single todo by ID
- */
-export async function getTodo(id: number): Promise<GetTodoResponse> {
-  const response = await fetch(`${BASE_URL}/todos/${id}`);
-  return handleResponse<GetTodoResponse>(response);
-}
-
-/**
  * Create a new todo
  */
-export async function createTodo(
-  data: CreateTodoRequest,
+export async function createTodoRequest(
+  title: string,
 ): Promise<CreateTodoResponse> {
   const response = await fetch(`${BASE_URL}/todos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      title,
+    }),
   });
   return handleResponse<CreateTodoResponse>(response);
 }
@@ -148,7 +145,7 @@ export async function createTodo(
  * Requires version field for optimistic concurrency control
  * May throw ConflictError if server has newer version
  */
-export async function updateTodo(
+export async function updateTodoRequest(
   id: number,
   data: UpdateTodoRequest,
 ): Promise<UpdateTodoResponse> {
@@ -166,7 +163,7 @@ export async function updateTodo(
  * Delete a todo
  * Optionally include version for conflict detection
  */
-export async function deleteTodo(
+export async function deleteTodoRequest(
   id: number,
   version?: number,
 ): Promise<DeleteTodoResponse> {
@@ -186,7 +183,9 @@ export async function deleteTodo(
  * Batch sync for offline-first apps
  * Synchronize multiple changes in one request
  */
-export async function syncTodos(data: SyncRequest): Promise<SyncResponse> {
+export async function syncTodosRequest(
+  data: SyncRequest,
+): Promise<SyncResponse> {
   const response = await fetch(`${BASE_URL}/todos/sync`, {
     method: 'POST',
     headers: {
@@ -225,14 +224,11 @@ export async function resetData(): Promise<ResetResponse> {
 // ==================== Export all functions ====================
 
 export const apiService = {
-  getTodos,
-  getTodo,
-  createTodo,
-  updateTodo,
-  deleteTodo,
-  syncTodos,
-  healthCheck,
-  resetData,
+  getTodosRequest,
+  createTodoRequest,
+  updateTodoRequest,
+  deleteTodoRequest,
+  syncTodosRequest,
 };
 
 export default apiService;

@@ -5,4 +5,14 @@ export type Todo = {
   createdAt: string;
   updatedAt: string;
   version: number;
+  syncStatus: SyncStatus;
+};
+
+export type SyncStatus = 'pending' | 'synced' | 'syncing';
+
+export type SyncAction = 'create' | 'update' | 'delete';
+
+export type SynceQueueItem = {
+  action: SyncAction;
+  data: Todo;
 };
