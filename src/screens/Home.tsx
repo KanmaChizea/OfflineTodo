@@ -9,20 +9,19 @@ import { useTodo } from '../services/todo';
 import { useTheme } from '../services/theme';
 import { Typography } from '../components/Typography';
 import { Button } from '../components/Button';
-import { useTodoSyncEngine } from '../services/sync_engine';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
   const { isDark, toggleTheme, colors } = useTheme();
   const { todos } = useTodo();
-  const { onInitializeTodos } = useTodoSyncEngine();
+  const { initializeTodos } = useTodo();
 
   const onAddTodoPress = () => {
     navigation.navigate('NewTodo', {});
   };
 
   useEffect(() => {
-    onInitializeTodos();
+    initializeTodos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

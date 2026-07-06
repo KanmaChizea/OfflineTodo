@@ -11,7 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'react-native-feather';
-import { useTodoSyncEngine } from '../services/sync_engine';
+import { useTodo } from '../services/todo';
 
 type Props = {
   todo: Todo;
@@ -21,7 +21,7 @@ export const TodoItem = ({ todo }: Props) => {
   const [showFull, setShowFull] = React.useState(false);
   const [confirmingDelete, setConfirmingDelete] = React.useState(false);
 
-  const { deleteTodo, updateTodo } = useTodoSyncEngine();
+  const { deleteTodo, updateTodo } = useTodo();
   const { colors } = useTheme();
 
   const onEdit = () => {
@@ -33,7 +33,7 @@ export const TodoItem = ({ todo }: Props) => {
   };
 
   const onConfirmDelete = () => {
-    deleteTodo(todo);
+    deleteTodo(todo.id);
     setConfirmingDelete(false);
   };
 

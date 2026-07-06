@@ -6,7 +6,7 @@ import { AppScreen } from '../components/AppScreen';
 import { Button } from '../components/Button';
 import { Typography } from '../components/Typography';
 import { useTheme } from '../services/theme';
-import { useTodoSyncEngine } from '../services/sync_engine';
+import { useTodo } from '../services/todo';
 
 type Props = StaticScreenProps<{
   todo?: Todo;
@@ -17,11 +17,19 @@ export const NewTodoScreen = ({ route }: Props) => {
   const { colors } = useTheme();
   const { todo } = route.params;
   const isEdit = Boolean(todo);
-  const { addTodo, updateTodo } = useTodoSyncEngine();
+  const { addTodo, updateTodo } = useTodo();
   const [title, setTitle] = React.useState(todo?.title || '');
 
   const onAdd = () => {
-    addTodo(title);
+    addTodo({
+      id: Date.now(),
+      title,
+      isCompleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      version: 1,
+      syncStatus: 'pending',
+    });
     navigation.goBack();
   };
 

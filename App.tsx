@@ -1,11 +1,10 @@
-import { StatusBar, useColorScheme } from 'react-native';
+import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './src/navigation';
 import { TodoProvider } from './src/services/todo';
-import { ThemeProvider } from './src/services/theme';
-import { useEffect } from 'react';
-import { useTodoSyncEngine } from './src/services/sync_engine';
-import { addEventListener } from '@react-native-community/netinfo';
+import { ThemeProvider, useTheme } from './src/services/theme';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { Typography } from './src/components/Typography';
 
 function App() {
   return (
@@ -23,22 +22,36 @@ export default App;
 
 const AppContent = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const { sync } = useTodoSyncEngine();
+  const { isConnected } = useNetInfo();
 
-  useEffect(() => {
-    const unsubscribe = addEventListener(state => {
-      if (state.isInternetReachable) {
-        sync();
-      }
-    });
-
-    unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      {!isConnected && <NoInternetBanner />}
       <Navigation />
     </>
   );
 };
+
+const NoInternetBanner = () => {
+  const { colors } = useTheme();
+  return (
+    <View style={[styles.bannerContainer, { backgroundColor: colors.primary }]}>
+      <Typography weight="700" color={colors.text} textAlign="center">
+        {'No Internet'}
+      </Typography>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+  },
+  bannerContainer: {
+    paddingVertical: 4,
+  },
+});
