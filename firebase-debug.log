@@ -1,0 +1,23 @@
+[debug] [2026-07-08T10:28:56.161Z] ----------------------------------------------------------------------
+[debug] [2026-07-08T10:28:56.168Z] Command:       /usr/local/bin/firebase /Users/ogechukwu.chizea/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase apps:create
+[debug] [2026-07-08T10:28:56.169Z] CLI Version:   15.16.0
+[debug] [2026-07-08T10:28:56.169Z] Platform:      darwin
+[debug] [2026-07-08T10:28:56.169Z] Node Version:  v20.18.2
+[debug] [2026-07-08T10:28:56.170Z] Time:          Wed Jul 08 2026 11:28:56 GMT+0100 (West Africa Standard Time)
+[debug] [2026-07-08T10:28:56.170Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-08T10:28:56.407Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-08T10:28:56.408Z] > authorizing via signed-in user (kanmachizeaa@gmail.com)
+[debug] [2026-07-08T10:31:09.581Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (/Users/ogechukwu.chizea/.cache/firebase/tools/lib/node_modules/@inquirer/core/dist/commonjs/lib/create-prompt.js:101:37)
+    at Interface.emit (node:events:518:28)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1125:18)
+    at ReadStream.onkeypress (node:internal/readline/interface:264:20)
+    at ReadStream.emit (node:events:530:35)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+    at ReadStream.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+[error] 
+[error] Error: An unexpected error has occurred.

@@ -23,7 +23,7 @@ export default App;
 const AppContent = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const { isConnected } = useNetInfo();
-
+  const isRooted = true;
   return (
     <>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />

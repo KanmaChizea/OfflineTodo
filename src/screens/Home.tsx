@@ -9,6 +9,8 @@ import { useTodo } from '../services/todo';
 import { useTheme } from '../services/theme';
 import { Typography } from '../components/Typography';
 import { Button } from '../components/Button';
+import AnalyticsService from '../services/analytics';
+import { getCrashlytics, log } from '@react-native-firebase/crashlytics';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -16,7 +18,24 @@ export const HomeScreen = () => {
   const { todos } = useTodo();
   const { initializeTodos } = useTodo();
 
+  const getUser = async () => {
+    return {
+      id: '1',
+      name: 'John Doe',
+      email: 'hMlWU@example.com',
+      country: 'Nigeria',
+      subscription: 'Premium',
+    };
+  };
+
+  const onLogin = async () => {
+    const user = await getUser();
+    AnalyticsService.setUser(user);
+    AnalyticsService.logEvent('transfer_initiated');
+  };
+
   const onAddTodoPress = () => {
+    log(getCrashlytics(), 'Add todo');
     navigation.navigate('NewTodo', {});
   };
 

@@ -1,4 +1,4 @@
-package com.offlinetodo
+package com.offline.todo
 
 import android.app.Application
 import com.facebook.react.PackageList
