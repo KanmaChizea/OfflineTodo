@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { LogOut } from 'react-native-feather';
 import { getCrashlytics, log } from '@react-native-firebase/crashlytics';
 import { useTheme } from '../services/theme';
+import AnalyticsService from '../services/analytics';
 
 export const LogoutButton = () => {
   const navigation = useNavigation();
@@ -11,6 +12,7 @@ export const LogoutButton = () => {
 
   const onLogoutPress = () => {
     log(getCrashlytics(), 'Logout');
+    AnalyticsService.logEvent('logout');
     navigation.navigate('Login');
   };
 

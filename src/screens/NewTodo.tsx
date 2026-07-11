@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import { Typography } from '../components/Typography';
 import { useTheme } from '../services/theme';
 import { useTodo } from '../services/todo';
+import AnalyticsService from '../services/analytics';
 
 type Props = StaticScreenProps<{
   todo?: Todo;
@@ -30,11 +31,13 @@ export const NewTodoScreen = ({ route }: Props) => {
       version: 1,
       syncStatus: 'pending',
     });
+    AnalyticsService.logEvent('todo_created');
     navigation.goBack();
   };
 
   const onEdit = () => {
     updateTodo({ ...todo!, title });
+    AnalyticsService.logEvent('todo_updated');
     navigation.goBack();
   };
 

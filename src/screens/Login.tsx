@@ -16,6 +16,7 @@ import { SocialLoginButton } from '../components/SocialLoginButton';
 import { Typography } from '../components/Typography';
 import { FullScreenLoader } from '../components/FullScreenLoader';
 import { useTheme } from '../services/theme';
+import AnalyticsService from '../services/analytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const LoginScreen = () => {
@@ -28,18 +29,22 @@ export const LoginScreen = () => {
 
   const onEmailLogin = () => {
     // TODO: replace with real authentication
+    AnalyticsService.logEvent('login_attempted', { method: 'email' });
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
+      AnalyticsService.logEvent('login_success', { method: 'email' });
       navigation.navigate('Home');
     }, 1000);
   };
 
   const onGoogleLogin = () => {
+    AnalyticsService.logEvent('login_attempted', { method: 'google' });
     // TODO: wire up Google Sign-In
   };
 
   const onAppleLogin = () => {
+    AnalyticsService.logEvent('login_attempted', { method: 'apple' });
     // TODO: wire up Apple Sign-In
   };
 

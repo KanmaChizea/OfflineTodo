@@ -4,6 +4,7 @@ import { Todo } from '../types/todo';
 import { Typography } from './Typography';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../services/theme';
+import AnalyticsService from '../services/analytics';
 import {
   Edit,
   Trash,
@@ -25,6 +26,7 @@ export const TodoItem = ({ todo }: Props) => {
   const { colors } = useTheme();
 
   const onEdit = () => {
+    AnalyticsService.logEvent('edit_todo');
     navigation.navigate('NewTodo', { todo });
   };
 
@@ -33,6 +35,7 @@ export const TodoItem = ({ todo }: Props) => {
   };
 
   const onConfirmDelete = () => {
+    AnalyticsService.logEvent('todo_deleted');
     deleteTodo(todo.id);
     setConfirmingDelete(false);
   };
@@ -42,10 +45,12 @@ export const TodoItem = ({ todo }: Props) => {
   };
 
   const onToggleComplete = () => {
+    const isCompleted = !todo.isCompleted;
     updateTodo({
       ...todo,
-      isCompleted: !todo.isCompleted,
+      isCompleted,
     });
+    AnalyticsService.logEvent(isCompleted ? 'todo_completed' : 'todo_uncompleted');
   };
 
   return (

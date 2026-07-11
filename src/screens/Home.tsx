@@ -12,6 +12,7 @@ import { LogoutButton } from '../components/LogoutButton';
 import { HomeListHeader } from '../components/HomeListHeader';
 import { HomeEmptyState } from '../components/HomeEmptyState';
 import { getCrashlytics, log } from '@react-native-firebase/crashlytics';
+import AnalyticsService from '../services/analytics';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +22,7 @@ export const HomeScreen = () => {
 
   const onAddTodoPress = () => {
     log(getCrashlytics(), 'Add todo');
+    AnalyticsService.logEvent('add_todo_pressed');
     navigation.navigate('NewTodo', {});
   };
 

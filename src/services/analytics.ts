@@ -1,14 +1,14 @@
 import {
   getAnalytics,
+  logEvent,
   logScreenView,
   setUserId,
   setUserProperties,
 } from '@react-native-firebase/analytics';
 
 class AnalyticsService {
-  constructor() {}
   logEvent(eventName: AnalyticsEvent, params?: Record<string, unknown>) {
-    console.log(eventName, params);
+    logEvent(getAnalytics(), eventName as string, params);
   }
 
   setUser(user: User) {
@@ -27,24 +27,6 @@ class AnalyticsService {
 
 export default new AnalyticsService();
 
-export const useAnalytics = () => {
-  const logEvent = (eventName: string, params?: Record<string, unknown>) => {
-    console.log(eventName, params);
-  };
-
-  const setUser = (user: User) => {
-    setUserId(getAnalytics(), user.id);
-    setUserProperties(getAnalytics(), {
-      country: user.country,
-    });
-  };
-
-  return {
-    logEvent,
-    setUser,
-  };
-};
-
 type User = {
   id: string;
   name: string;
@@ -53,4 +35,17 @@ type User = {
   subscription: string;
 };
 
-export type AnalyticsEvent = 'transfer_initiated' | 'transfer_completed';
+export type AnalyticsEvent =
+  | 'screen_view'
+  | 'login_attempted'
+  | 'login_success'
+  | 'login_failed'
+  | 'logout'
+  | 'add_todo_pressed'
+  | 'edit_todo'
+  | 'todo_created'
+  | 'todo_updated'
+  | 'todo_deleted'
+  | 'todo_completed'
+  | 'todo_uncompleted'
+  | 'theme_toggled';
