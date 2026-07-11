@@ -5,6 +5,7 @@ import {
   setUserId,
   setUserProperties,
 } from '@react-native-firebase/analytics';
+import { User } from './mockAuthApi';
 
 class AnalyticsService {
   logEvent(eventName: AnalyticsEvent, params?: Record<string, unknown>) {
@@ -26,14 +27,6 @@ class AnalyticsService {
 }
 
 export default new AnalyticsService();
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  country: string;
-  subscription: string;
-};
 
 export type AnalyticsEvent =
   | 'screen_view'

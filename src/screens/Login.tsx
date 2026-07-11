@@ -17,6 +17,7 @@ import { Typography } from '../components/Typography';
 import { FullScreenLoader } from '../components/FullScreenLoader';
 import { useTheme } from '../services/theme';
 import AnalyticsService from '../services/analytics';
+import { mockAuthApi } from '../services/mockAuthApi';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const LoginScreen = () => {
@@ -27,15 +28,23 @@ export const LoginScreen = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onEmailLogin = () => {
-    // TODO: replace with real authentication
+  const onEmailLogin = async () => {
     AnalyticsService.logEvent('login_attempted', { method: 'email' });
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const response = await mockAuthApi.login(email, password);
       AnalyticsService.logEvent('login_success', { method: 'email' });
+      AnalyticsService.setUser(response);
       navigation.navigate('Home');
-    }, 1000);
+    } catch (error) {
+      AnalyticsService.logEvent('login_failed', {
+        method: 'email',
+        error: String(error),
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onGoogleLogin = () => {
