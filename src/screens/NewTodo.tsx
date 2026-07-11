@@ -7,7 +7,6 @@ import { Button } from '../components/Button';
 import { Typography } from '../components/Typography';
 import { useTheme } from '../services/theme';
 import { useTodo } from '../services/todo';
-import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 
 type Props = StaticScreenProps<{
   todo?: Todo;
@@ -31,8 +30,6 @@ export const NewTodoScreen = ({ route }: Props) => {
       version: 1,
       syncStatus: 'pending',
     });
-    logEvent(getAnalytics(), 'todo_added', {});
-    logEvent(getAnalytics(), 'add_todo_failed', {});
     navigation.goBack();
   };
 

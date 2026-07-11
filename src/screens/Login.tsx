@@ -2,7 +2,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -15,7 +14,9 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { SocialLoginButton } from '../components/SocialLoginButton';
 import { Typography } from '../components/Typography';
+import { FullScreenLoader } from '../components/FullScreenLoader';
 import { useTheme } from '../services/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const LoginScreen = () => {
   const navigation = useNavigation();
@@ -133,6 +134,7 @@ export const LoginScreen = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <FullScreenLoader visible={isLoading} message="Signing in..." />
     </SafeAreaView>
   );
 };
